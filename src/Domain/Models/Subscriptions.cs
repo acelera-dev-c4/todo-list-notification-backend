@@ -1,12 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Domain.Models
+﻿namespace Domain
 {
-    internal class Class1
+    public class Subscriptions
     {
+        public int Id { get; set; }
+        public int SubTaskIdSubscriber {  get; set; }
+        public int MainTaskIdTopic {  get; set; }
+
     }
 }
