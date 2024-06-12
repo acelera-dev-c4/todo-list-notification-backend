@@ -431,3 +431,4 @@ appsettings.Development.json
 /src/Infra/DB/DatabaseHelper.cs
 src/.DS_Store
 .DS_Store
+
