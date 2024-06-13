@@ -36,7 +36,7 @@ Este projeto tem como objetivo fornecer uma API RESTful para gerenciamento de ta
 
 ## Modelo de Dados
 
-![Modelo de Dados](https://github.com/raffacabofrio/acelera-dev-todo-list/blob/main/docs/MODELO.drawio.png)
+![Modelo de Dados](https://github.com/acelera-dev-c4/todo-list-notification-backend/blob/main/docs/MODELO.drawio.png)
 
 ## Como Executar
 
