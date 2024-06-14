@@ -7,6 +7,8 @@
     <RootNamespace>todo_list_notification_backend</RootNamespace>
   </PropertyGroup>
 
+  <PropertyGroup Condition=" '$(RunConfiguration)' == 'https' " />
+  <PropertyGroup Condition=" '$(RunConfiguration)' == 'http' " />
   <ItemGroup>
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
   </ItemGroup>
@@ -14,5 +16,12 @@
   <ItemGroup>
     <Folder Include="Controllers\" />
   </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\Infra\Infra.csproj" />
+      <ProjectReference Include="..\Services\Services.csproj" />
+  </ItemGroup>
+
+
 
 </Project>
