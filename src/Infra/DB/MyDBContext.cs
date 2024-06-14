@@ -1,6 +1,8 @@
 ﻿using Domain.Models;
 using Microsoft.EntityFrameworkCore;
 
+namespace Infra.DB;
+
 public class MyDBContext : DbContext
 {
 	public DbSet<Notifications> Notifications { get; set; }
