@@ -1,3 +1,5 @@
+using Api.Middlewares;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -17,6 +19,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+app.UseMiddleware(typeof(ExceptionHandler));
 
 app.UseAuthorization();
 
