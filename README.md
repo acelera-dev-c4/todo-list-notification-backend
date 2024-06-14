@@ -66,35 +66,10 @@ bash git clone https://github.com/acelera-dev-c4/todo-list-notification-backend.
    Navegue para http://localhost:5042/swagger para ver e interagir com a documentação da API e testar os endpoints.
 
 
-## Dicas de como fazer uma migration
+## Migration
 
-## Caso precise alterar ou adicionar um dado. Siga os passos abaixo:
-### 1 - Altere ou adicione o dado
-- 1.1 Na pasta src >> Domain >> Mappers, você tem os mapeamentos entre as entidades e as tabelas do banco.
-- 1.2 Na pasta src >> Domain >> Models, você tem as classes referentes as tabelas
-- 1.3 Execute as alterações conforme necessário
-
-### 2 - Execute os comandos de migration
-- 2.1 No Package Manager Console, selecione o projeto Infra como projeto padrão.
-- 2.2 No Package Manager Console, execute os comandos:
-- ```bash
-  Add-Migration NOME_SIGNIFICATIVO
-  Update-Database
-
-- OBS: O nome da migration deve ser facilmente entendido. Logo, faça pequenas alterações, mesmo que com isso você tenha diversas migrations.
-
-## Caso precise incluir uma nova tabela
-### 1 - Crie as classes necessárias
-- 1.1 Na pasta src >> Domain >> Models, crie a classe referente a tabela
-- 1.2 Na pasta src >> Domain >> Mappers, crie o mapeamento entre classe do passo anterior e a tabela do banco.
-
-## 2 - Execute os comandos de migration
-- 2.1 No Package Manager Console, selecione o projeto Infra como projeto padrão.
-- 2.2 No Package Manager Console, execute os comandos:
-- ```bash
-  Add-Migration NOME_SIGNIFICATIVO
-  Update-Database
-- OBS: O nome da migration deve ser facilmente entendido. Logo, faça pequenas alterações, mesmo que com isso você tenha diversas migrations.
+- Os migrations vão ser centralizados no primeiro projeto todo-list-backend. 
+- É uma decisão de projeto pra facilitar e reaproveitar o banco.
 
 ## Autores
 
@@ -104,7 +79,7 @@ bash git clone https://github.com/acelera-dev-c4/todo-list-notification-backend.
 - [Diogenes Lima](https://github.com/LimaDiogenes)
 - [Igor Cordeiro](https://github.com/igorcordeiro08)
 - [Leandro Pio](https://github.com/LeandroMPio)
-- [Patric](https://github.com/Patric-BM)
+- [Patric Costa](https://github.com/Patric-BM)
 - [Vagner Silva](https://github.com/Vagner1212)
 
 ## Relacionados
