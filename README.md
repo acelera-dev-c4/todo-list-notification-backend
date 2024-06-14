@@ -68,7 +68,7 @@ bash git clone https://github.com/acelera-dev-c4/todo-list-notification-backend.
 
 ## Migration
 
-- Os migrations vão ser centralizados no primeiro projeto todo-list-backend. -> https://github.com/acelera-dev-c4/todo-list-backend
+- Os migrations vão ser centralizados no primeiro projeto -> [todo-list-backend](https://github.com/acelera-dev-c4/todo-list-backend).
 - É uma decisão de projeto pra facilitar e reaproveitar o banco.
 
 ## Autores
