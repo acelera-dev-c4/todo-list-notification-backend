@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Infra.DB;
+using Api.Middlewares;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -25,6 +26,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+app.UseMiddleware(typeof(ExceptionHandler));
 
 app.UseAuthorization();
 
