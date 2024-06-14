@@ -12,9 +12,22 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+// CORS
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAllHeaders",
+        builder =>
+        {
+            builder.AllowAnyOrigin()
+                .AllowAnyHeader()
+                .AllowAnyMethod();
+        });
+});
+
 builder.Services.AddDbContext<MyDBContext>(options =>
 	options.UseSqlServer(builder.Configuration.GetConnectionString("AceleraDev"),
 		sqlOptions => sqlOptions.MigrationsAssembly("Infra")));
+
 
 var app = builder.Build();
 
@@ -26,6 +39,9 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+
+app.UseCors("AllowAllHeaders");
 
 app.UseMiddleware(typeof(ExceptionHandler));
 
