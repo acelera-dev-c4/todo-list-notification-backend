@@ -1,6 +1,7 @@
-using Microsoft.EntityFrameworkCore;
-using Infra.DB;
 using Api.Middlewares;
+using Infra.DB;
+using Microsoft.EntityFrameworkCore;
+using Services;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -24,9 +25,11 @@ builder.Services.AddCors(options =>
         });
 });
 
+builder.Services.AddScoped<IUnsubscriptionService, UnsubscriptionService>();
+
 builder.Services.AddDbContext<MyDBContext>(options =>
-	options.UseSqlServer(builder.Configuration.GetConnectionString("AceleraDev"),
-		sqlOptions => sqlOptions.MigrationsAssembly("Infra")));
+    options.UseSqlServer(builder.Configuration.GetConnectionString("AceleraDev"),
+        sqlOptions => sqlOptions.MigrationsAssembly("Infra")));
 
 
 var app = builder.Build();
