@@ -1,6 +1,10 @@
 using Microsoft.EntityFrameworkCore;
-using Infra.DB;
+using Infra.DB; 
 using Api.Middlewares;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using Domain.Options;
+using System.Text;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -27,6 +31,35 @@ builder.Services.AddCors(options =>
 builder.Services.AddDbContext<MyDBContext>(options =>
 	options.UseSqlServer(builder.Configuration.GetConnectionString("AceleraDev"),
 		sqlOptions => sqlOptions.MigrationsAssembly("Infra")));
+
+
+var tokenOptions = builder.Configuration.GetSection("Token").Get<TokenOptions>();
+if (tokenOptions == null || string.IsNullOrEmpty(tokenOptions.Key))
+{
+	throw new ArgumentNullException(nameof(tokenOptions.Key), "Token key must be configured.");
+}
+var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(tokenOptions.Key));
+
+builder.Services.AddAuthentication(x =>
+{
+	x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+	x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+})
+	  .AddJwtBearer(options =>
+	  {
+		  options.RequireHttpsMetadata = false;
+		  options.SaveToken = true;
+		  options.TokenValidationParameters = new TokenValidationParameters
+		  {
+			  IssuerSigningKey = securityKey,
+			  ValidateIssuerSigningKey = true,
+			  ValidateAudience = true,
+			  ValidAudience = tokenOptions.Audience,
+			  ValidateIssuer = true,
+			  ValidIssuer = tokenOptions.Issuer,
+			  ValidateLifetime = true
+		  };
+	  });
 
 
 var app = builder.Build();
