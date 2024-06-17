@@ -1,13 +1,14 @@
 using Microsoft.EntityFrameworkCore;
 using Infra.DB;
 using Api.Middlewares;
+using Services;
 
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-
 builder.Services.AddControllers();
+builder.Services.AddScoped<IUnsubscriptionService, UnsubscriptionService>();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
