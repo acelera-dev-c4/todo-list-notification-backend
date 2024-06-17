@@ -20,6 +20,6 @@ public class SubscriptionController : Controller
     public async Task<IActionResult> Delete(int subscriptionId)
     {
         await _unsubscriptionService.Delete(subscriptionId);
-        return Ok("this is a test from /Subscription delete");
+        return NoContent();
     }
 }

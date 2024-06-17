@@ -1,4 +1,5 @@
-﻿using Domain.Models;
+﻿using Domain.Exceptions;
+using Domain.Models;
 using Infra.DB;
 using Microsoft.EntityFrameworkCore;
 
@@ -28,7 +29,7 @@ public class UnsubscriptionService : IUnsubscriptionService
     {
         var subscription = await GetById(subscriptionId);
 
-        if (subscription is null) throw new Exception("Subscription not found");
+        if (subscription is null) throw new NotFoundException("Subscription not found");
 
         await _myDBContext.Subscriptions.Where(x => x.Id == subscriptionId).ExecuteDeleteAsync();
     }
