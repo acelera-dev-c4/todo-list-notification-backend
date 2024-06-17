@@ -4,7 +4,7 @@
     <TargetFramework>net8.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
-    <RootNamespace>todo_list_notification_backend</RootNamespace>
+    <RootNamespace>todo-list-notification-backend</RootNamespace>
   </PropertyGroup>
 
   <PropertyGroup Condition=" '$(RunConfiguration)' == 'https' " />
@@ -16,6 +16,7 @@
   </ItemGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\Domain\Domain.csproj" />
       <ProjectReference Include="..\Infra\Infra.csproj" />
       <ProjectReference Include="..\Services\Services.csproj" />
   </ItemGroup>

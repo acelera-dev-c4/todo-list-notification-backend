@@ -5,6 +5,8 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Domain.Options;
 using System.Text;
+using Services;
+
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -28,9 +30,11 @@ builder.Services.AddCors(options =>
         });
 });
 
+builder.Services.AddScoped<IUnsubscriptionService, UnsubscriptionService>();
+
 builder.Services.AddDbContext<MyDBContext>(options =>
-	options.UseSqlServer(builder.Configuration.GetConnectionString("AceleraDev"),
-		sqlOptions => sqlOptions.MigrationsAssembly("Infra")));
+    options.UseSqlServer(builder.Configuration.GetConnectionString("AceleraDev"),
+        sqlOptions => sqlOptions.MigrationsAssembly("Infra")));
 
 
 var tokenOptions = builder.Configuration.GetSection("Token").Get<TokenOptions>();
