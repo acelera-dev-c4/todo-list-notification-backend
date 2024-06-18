@@ -1,5 +1,9 @@
 using Api.Middlewares;
 using Microsoft.OpenApi.Models;
+using Microsoft.EntityFrameworkCore; 
+using Microsoft.AspNetCore.Authentication.JwtBearer; 
+using Microsoft.IdentityModel.Tokens; 
+
 
 var builder = WebApplication.CreateBuilder(args);
 
