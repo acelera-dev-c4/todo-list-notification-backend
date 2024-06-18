@@ -1,4 +1,5 @@
 ﻿using Domain.Requests;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 using Services;
@@ -8,6 +9,7 @@ namespace Api.Controllers;
 [ApiController]
 [Route("[Controller]")]
 [EnableCors("AllowAllHeaders")]
+[Authorize]
 public class SubscriptionController : Controller
 {
     private readonly IUnsubscriptionService _unsubscriptionService;
