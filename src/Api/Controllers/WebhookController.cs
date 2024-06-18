@@ -6,7 +6,7 @@ namespace todo_list_notification_backend.Controllers
     [ApiController]
     //[Authorize]
     [Route("api/webhooks")]
-    public class Webhooks : Controller
+    public class WebhookController : Controller
     {       
         [HttpPost("subscribesubtask")] // acesso direto do front
         public IActionResult CreateSubTaskSubscription(int subTaskId, int userId)
