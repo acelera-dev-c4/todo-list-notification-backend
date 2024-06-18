@@ -30,7 +30,7 @@ public class ToDoListHttpClient
         string jsonPayload = JsonSerializer.Serialize(payload);
 
         HttpContent content = new StringContent(jsonPayload, Encoding.UTF8, "application/json");
-        await httpClient.PostAsync($"{httpClient.BaseAddress}webhooks/advise", content);
+        await httpClient.PostAsync($"{httpClient.BaseAddress}MainTask/SetUrlWebhook", content);
     }
 
 }
