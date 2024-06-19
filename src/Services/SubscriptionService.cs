@@ -28,7 +28,7 @@ public class SubscriptionService : ISubscriptionService
             MainTaskIdTopic = subscription.MainTaskIdTopic
         };
         
-        _todoListHttpClient.AdviseToDoOfSubscription(subscription.MainTaskIdTopic);
+        //_todoListHttpClient.AdviseToDoOfSubscription(subscription.MainTaskIdTopic);
         
         _myDBContext.Subscriptions.Add(newSubscription);
         await _myDBContext.SaveChangesAsync();

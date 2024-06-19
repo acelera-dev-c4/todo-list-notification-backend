@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 using Services;
+using Infra;
 
 namespace Api.Controllers;
 
@@ -15,7 +16,9 @@ public class SubscriptionController : Controller
     private readonly IUnsubscriptionService _unsubscriptionService;
     private readonly ISubscriptionService _subscriptionService;
 
-    public SubscriptionController(IUnsubscriptionService unsubscriptionService, ISubscriptionService subscriptionService)
+    public ToDoListHttpClient todoListHttpClient = new ToDoListHttpClient();
+
+	public SubscriptionController(IUnsubscriptionService unsubscriptionService, ISubscriptionService subscriptionService)
     {
         _unsubscriptionService = unsubscriptionService;
         _subscriptionService = subscriptionService;
@@ -33,5 +36,13 @@ public class SubscriptionController : Controller
     {
         await _unsubscriptionService.Delete(subscriptionId);
         return NoContent();
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> Teste()
+    {
+        await todoListHttpClient.ExecuteAsync();
+
+        return Ok();
     }
 }
