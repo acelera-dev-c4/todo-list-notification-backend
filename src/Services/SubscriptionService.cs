@@ -13,11 +13,12 @@ public interface ISubscriptionService
 public class SubscriptionService : ISubscriptionService
 {
     private readonly MyDBContext _myDBContext;
-    ToDoListHttpClient _todoListHttpClient = new();
+    private readonly ToDoListHttpClient _todoListHttpClient;
 
-    public SubscriptionService(MyDBContext context)
+    public SubscriptionService(MyDBContext context, ToDoListHttpClient toDoListHttpClient)
     {
         _myDBContext = context;
+        _todoListHttpClient = toDoListHttpClient;
     }
 
     public async Task<Subscriptions> Create(SubscriptionsRequest subscription)
@@ -28,7 +29,7 @@ public class SubscriptionService : ISubscriptionService
             MainTaskIdTopic = subscription.MainTaskIdTopic
         };
         
-        _todoListHttpClient.AdviseToDoOfSubscription(subscription.MainTaskIdTopic);
+        await _todoListHttpClient.AdviseToDoOfSubscription(subscription.MainTaskIdTopic);
         
         _myDBContext.Subscriptions.Add(newSubscription);
         await _myDBContext.SaveChangesAsync();

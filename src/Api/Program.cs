@@ -8,10 +8,13 @@ using System.Text;
 using Services;
 using Infra;
 using Microsoft.OpenApi.Models;
+using Microsoft.Extensions.Configuration;
 
 
 
 var builder = WebApplication.CreateBuilder(args);
+
+var configuration = builder.Configuration;
 
 // Add services to the container.
 builder.Services.AddControllers();
@@ -61,8 +64,11 @@ builder.Services.AddCors(options =>
         });
 });
 
+
 builder.Services.AddScoped<IUnsubscriptionService, UnsubscriptionService>();
 builder.Services.AddScoped<ISubscriptionService, SubscriptionService>();
+builder.Services.AddScoped<ToDoListHttpClient>();
+builder.Services.AddScoped<HttpClient>();
 
 builder.Services.AddDbContext<MyDBContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("AceleraDev"),
@@ -97,6 +103,9 @@ builder.Services.AddAuthentication(x =>
 		  };
 	  });
 
+
+var httpClient = new HttpClient();
+var todoListClient = new ToDoListHttpClient(httpClient, configuration);
 
 var app = builder.Build();
 
