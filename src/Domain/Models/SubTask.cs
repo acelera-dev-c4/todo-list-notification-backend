@@ -1,4 +1,7 @@
-﻿namespace Domain.Models;
+﻿
+// Código do microsserviço
+
+namespace Domain.Models;
 public class SubTask
 {
 	public int? Id { get; set; }

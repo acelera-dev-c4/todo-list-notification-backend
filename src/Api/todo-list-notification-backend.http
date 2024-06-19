@@ -1,4 +1,4 @@
-@todo_list_notification_backend_HostAddress = http://localhost:5042
+@todo_list_notification_backend_HostAddress = http://localhost:5002
 
 GET {{todo_list_notification_backend_HostAddress}}/weatherforecast/
 Accept: application/json
