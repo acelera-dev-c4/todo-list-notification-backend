@@ -1,6 +1,7 @@
 ﻿using Domain.Models;
 using Domain.Requests;
 using Infra.DB;
+using Domain.Mappers;
 
 namespace Services;
 
@@ -20,12 +21,7 @@ public class NotificationService : INotificationService
 
 	public async Task<Notifications> Create(NotificationRequest notification)
 	{
-		var newNotification = new Notifications
-		{
-			SubscriptionId = notification.SubscriptionId,
-			Message = notification.Message,
-			Readed = notification.Readed,
-		};
+		var newNotification = NotificationMapper.ToClass(notification);
 
 		_myDBContext.Notifications.Add(newNotification);
 		await _myDBContext.SaveChangesAsync();
