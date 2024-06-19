@@ -24,7 +24,7 @@ public class SubscriptionController : Controller
     [HttpPost]
     public async Task<IActionResult> Create([FromBody] SubscriptionsRequest subscriptionsRequest)
     {
-        var newSubscription = await _subscriptionService.Create(subscriptionsRequest);
+        var newSubscription = await _subscriptionService.Create(subscriptionsRequest);        
         return Ok(newSubscription);
     }
 
