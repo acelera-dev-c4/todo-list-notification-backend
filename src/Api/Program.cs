@@ -6,14 +6,19 @@ using Microsoft.IdentityModel.Tokens;
 using Domain.Options;
 using System.Text;
 using Services;
+using Infra;
 using Microsoft.OpenApi.Models;
+using Microsoft.Extensions.Configuration;
+
 
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+var configuration = builder.Configuration;
 
+// Add services to the container.
 builder.Services.AddControllers();
+builder.Services.AddScoped<IUnsubscriptionService, UnsubscriptionService>();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 
@@ -59,8 +64,11 @@ builder.Services.AddCors(options =>
         });
 });
 
+
 builder.Services.AddScoped<IUnsubscriptionService, UnsubscriptionService>();
 builder.Services.AddScoped<ISubscriptionService, SubscriptionService>();
+builder.Services.AddScoped<ToDoListHttpClient>();
+builder.Services.AddScoped<HttpClient>();
 
 builder.Services.AddDbContext<MyDBContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("AceleraDev"),
@@ -95,6 +103,9 @@ builder.Services.AddAuthentication(x =>
 		  };
 	  });
 
+
+var httpClient = new HttpClient();
+var todoListClient = new ToDoListHttpClient(httpClient, configuration);
 
 var app = builder.Build();
 
