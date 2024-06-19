@@ -1,6 +1,7 @@
 using Domain.Models;
 using Domain.Requests;
 using Infra.DB;
+using Infra;
 
 namespace Services;
 
@@ -12,10 +13,12 @@ public interface ISubscriptionService
 public class SubscriptionService : ISubscriptionService
 {
     private readonly MyDBContext _myDBContext;
-   
-    public SubscriptionService(MyDBContext context)
+    private readonly ToDoListHttpClient _todoListHttpClient;
+
+    public SubscriptionService(MyDBContext context, ToDoListHttpClient toDoListHttpClient)
     {
         _myDBContext = context;
+        _todoListHttpClient = toDoListHttpClient;
     }
 
     public async Task<Subscriptions> Create(SubscriptionsRequest subscription)
@@ -25,7 +28,9 @@ public class SubscriptionService : ISubscriptionService
             SubTaskIdSubscriber = subscription.SubTaskIdSubscriber,
             MainTaskIdTopic = subscription.MainTaskIdTopic
         };
-
+        
+        await _todoListHttpClient.AdviseToDoOfSubscription(subscription.MainTaskIdTopic);
+        
         _myDBContext.Subscriptions.Add(newSubscription);
         await _myDBContext.SaveChangesAsync();
 
