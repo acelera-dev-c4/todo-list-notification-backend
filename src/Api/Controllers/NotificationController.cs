@@ -33,12 +33,7 @@ public class NotificationController : Controller
 		return Ok(notifications);
 	}
 
-	[HttpGet("notificationId")]
-	public async Task<IActionResult> Get([FromRoute]int notificationId)
-	{
-		var notifications = await _notificationService.ListById(notificationId);
-		return Ok(notifications);
-	}
+	
 
 }
 

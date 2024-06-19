@@ -9,7 +9,7 @@ public interface INotificationService
 {
 	Task<Notifications> Create(NotificationRequest notification);
 	Task<List<Notifications>> List();
-    Task<List<Notifications>> ListById(int mainTaskId);
+    Task<List<Notifications>> GetById(int mainTaskId);
 }
 
 public class NotificationService : INotificationService
@@ -38,11 +38,11 @@ public class NotificationService : INotificationService
 
 	public async Task<List<Notifications>> List() 
 	{
-		return await _myDBContext.Notifications.OrderByDescending(x=>x.SubscriptionId).ToListAsync();
+		return await _myDBContext.Notifications.OrderByDescending(x=>x.Id).ToListAsync();
 	}
 
-	public async Task<List<Notifications>> ListById(int notificationId)
+	public async Task<List<Notifications>> GetById(int notificationId)
 	{
-		return await _myDBContext.Notifications.Where(x => x.SubscriptionId == notificationId).ToListAsync();
+		return await _myDBContext.Notifications.Where(x => x.Id == notificationId).ToListAsync();
 	}
 }
