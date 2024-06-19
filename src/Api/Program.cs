@@ -63,6 +63,7 @@ builder.Services.AddCors(options =>
 
 builder.Services.AddScoped<IUnsubscriptionService, UnsubscriptionService>();
 builder.Services.AddScoped<ISubscriptionService, SubscriptionService>();
+builder.Services.AddScoped<INotificationService, NotificationService>();
 
 builder.Services.AddDbContext<MyDBContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("AceleraDev"),
