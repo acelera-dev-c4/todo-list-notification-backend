@@ -1,12 +1,15 @@
 ﻿using Domain.Models;
 using Domain.Requests;
 using Infra.DB;
+using Microsoft.EntityFrameworkCore;
 
 namespace Services;
 
 public interface INotificationService
 {
 	Task<Notifications> Create(NotificationRequest notification);
+	Task<List<Notifications>> List();
+    Task<List<Notifications>> ListById(int mainTaskId);
 }
 
 public class NotificationService : INotificationService
@@ -31,5 +34,15 @@ public class NotificationService : INotificationService
 		await _myDBContext.SaveChangesAsync();
 
 		return newNotification;
+	}
+
+	public async Task<List<Notifications>> List() 
+	{
+		return await _myDBContext.Notifications.OrderByDescending(x=>x.SubscriptionId).ToListAsync();
+	}
+
+	public async Task<List<Notifications>> ListById(int notificationId)
+	{
+		return await _myDBContext.Notifications.Where(x => x.SubscriptionId == notificationId).ToListAsync();
 	}
 }

@@ -25,5 +25,20 @@ public class NotificationController : Controller
 		var newNotification = await _notificationService.Create(notificationRequest);
 		return Ok(newNotification);
 	}
+
+	[HttpGet]
+	public async Task<IActionResult> Get()
+	{
+		var notifications = await _notificationService.List();
+		return Ok(notifications);
+	}
+
+	[HttpGet("notificationId")]
+	public async Task<IActionResult> Get([FromRoute]int notificationId)
+	{
+		var notifications = await _notificationService.ListById(notificationId);
+		return Ok(notifications);
+	}
+
 }
 
