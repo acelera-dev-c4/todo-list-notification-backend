@@ -26,5 +26,15 @@ public class NotificationController : Controller
 		return Ok(newNotification);
 	}
 
+
+	[HttpGet]
+	public async Task<IActionResult> Get()
+	{
+		var notifications = await _notificationService.List();
+		return Ok(notifications);
+	}
+
+	
+
 }
 
