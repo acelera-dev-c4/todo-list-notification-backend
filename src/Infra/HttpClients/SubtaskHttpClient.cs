@@ -24,7 +24,7 @@ public class SubtaskHttpClient : ISubTaskHttpClient
     {
         _httpClient = httpClient;
         _options = options.Value;
-        _httpClient.BaseAddress = new Uri(_options.Uri!);
+        _httpClient.BaseAddress = new Uri(_options.BaseUrl!);
     }
 
     public async Task<string> GetJWTAsync()

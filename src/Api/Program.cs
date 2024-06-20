@@ -60,7 +60,7 @@ builder.Services.AddCors(options =>
 });
 
 
-builder.Services.Configure<NotificationOptions>(builder.Configuration.GetSection("Notification"));
+builder.Services.Configure<NotificationOptions>(builder.Configuration.GetSection("NotificationApi"));
 builder.Services.AddScoped<IUnsubscriptionService, UnsubscriptionService>();
 builder.Services.AddScoped<ISubscriptionService, SubscriptionService>();
 builder.Services.AddScoped<INotificationService, NotificationService>();

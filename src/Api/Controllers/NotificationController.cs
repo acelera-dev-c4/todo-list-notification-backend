@@ -34,7 +34,14 @@ public class NotificationController : Controller
 		return Ok(notifications);
 	}
 
-	
+	[HttpGet("{UserId}")]
+	public async Task<IActionResult> GetByUserId([FromRoute] int UserId)
+	{
+		var notifications = await _notificationService.GetByUserId(UserId);
+		return Ok(notifications);
+	}
+
+
 
 }
 
