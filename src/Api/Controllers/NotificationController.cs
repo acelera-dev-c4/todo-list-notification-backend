@@ -26,6 +26,7 @@ public class NotificationController : Controller
 		return Ok(newNotification);
 	}
 
+
 	[HttpGet]
 	public async Task<IActionResult> Get()
 	{

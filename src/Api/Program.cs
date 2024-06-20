@@ -1,27 +1,22 @@
-using Microsoft.EntityFrameworkCore;
-using Infra.DB; 
 using Api.Middlewares;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.IdentityModel.Tokens;
 using Domain.Options;
-using System.Text;
-using Services;
 using Infra;
+using Infra.DB;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
-using Microsoft.Extensions.Configuration;
+using Services;
+using System.Text;
 
 
 
 var builder = WebApplication.CreateBuilder(args);
-
 var configuration = builder.Configuration;
 
 // Add services to the container.
 builder.Services.AddControllers();
-builder.Services.AddScoped<IUnsubscriptionService, UnsubscriptionService>();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
-
 builder.Services.AddSwaggerGen(c =>
 {
     c.SwaggerDoc("v1", new OpenApiInfo { Title = "My API", Version = "v1" });
@@ -65,11 +60,13 @@ builder.Services.AddCors(options =>
 });
 
 
+builder.Services.Configure<NotificationOptions>(builder.Configuration.GetSection("Notification"));
 builder.Services.AddScoped<IUnsubscriptionService, UnsubscriptionService>();
 builder.Services.AddScoped<ISubscriptionService, SubscriptionService>();
 builder.Services.AddScoped<INotificationService, NotificationService>();
-builder.Services.AddScoped<ToDoListHttpClient>();
-builder.Services.AddScoped<HttpClient>();
+builder.Services.AddSingleton<SubtaskHttpClient>();
+builder.Services.AddSingleton<ToDoListHttpClient>();
+builder.Services.AddSingleton<HttpClient>();
 
 
 builder.Services.AddDbContext<MyDBContext>(options =>
@@ -80,34 +77,30 @@ builder.Services.AddDbContext<MyDBContext>(options =>
 var tokenOptions = builder.Configuration.GetSection("Token").Get<TokenOptions>();
 if (tokenOptions == null || string.IsNullOrEmpty(tokenOptions.Key))
 {
-	throw new ArgumentNullException(nameof(tokenOptions.Key), "Token key must be configured.");
+    throw new ArgumentNullException(nameof(tokenOptions.Key), "Token key must be configured.");
 }
 var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(tokenOptions.Key));
 
 builder.Services.AddAuthentication(x =>
 {
-	x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-	x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+    x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
 })
-	  .AddJwtBearer(options =>
-	  {
-		  options.RequireHttpsMetadata = false;
-		  options.SaveToken = true;
-		  options.TokenValidationParameters = new TokenValidationParameters
-		  {
-			  IssuerSigningKey = securityKey,
-			  ValidateIssuerSigningKey = true,
-			  ValidateAudience = true,
-			  ValidAudience = tokenOptions.Audience,
-			  ValidateIssuer = true,
-			  ValidIssuer = tokenOptions.Issuer,
-			  ValidateLifetime = true
-		  };
-	  });
-
-
-var httpClient = new HttpClient();
-var todoListClient = new ToDoListHttpClient(httpClient, configuration);
+      .AddJwtBearer(options =>
+      {
+          options.RequireHttpsMetadata = false;
+          options.SaveToken = true;
+          options.TokenValidationParameters = new TokenValidationParameters
+          {
+              IssuerSigningKey = securityKey,
+              ValidateIssuerSigningKey = true,
+              ValidateAudience = true,
+              ValidAudience = tokenOptions.Audience,
+              ValidateIssuer = true,
+              ValidIssuer = tokenOptions.Issuer,
+              ValidateLifetime = true
+          };
+      });
 
 var app = builder.Build();
 
