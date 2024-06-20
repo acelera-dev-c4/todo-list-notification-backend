@@ -25,5 +25,6 @@ public class NotificationController : Controller
 		var newNotification = await _notificationService.Create(notificationRequest);
 		return Ok(newNotification);
 	}
+
 }
 
