@@ -11,7 +11,8 @@ public interface INotificationService
 {
 	Task<Notifications> Create(NotificationRequest notification);
 	Task<List<Notifications>> List();
-  Task<List<Notifications>> GetById(int mainTaskId);
+    Task<List<Notifications>> GetById(int mainTaskId);
+	Task<List<Notifications>> GetByUserId(int userId);
 }
 
 public class NotificationService : INotificationService
@@ -68,4 +69,8 @@ public class NotificationService : INotificationService
 
     }
 
+	public async Task<List<Notifications>> GetByUserId(int userId)
+	{
+		return await _myDBContext.Notifications.Where(x => x.UserId == userId).OrderByDescending(x => x.Id).ToListAsync();
+	}
 }

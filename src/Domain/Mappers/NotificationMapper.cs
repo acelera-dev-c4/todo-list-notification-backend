@@ -10,6 +10,7 @@ public class NotificationMapper
 		Id = null,
 		SubscriptionId = notificationRequest.SubscriptionId,
 		Message = notificationRequest.Message,
-		Readed = notificationRequest.Readed
+		Readed = notificationRequest.Readed,
+		UserId = notificationRequest.UserId,
 	};
 }
