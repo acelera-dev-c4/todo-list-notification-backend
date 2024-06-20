@@ -13,15 +13,11 @@ using Microsoft.Extensions.Configuration;
 
 
 var builder = WebApplication.CreateBuilder(args);
-
 var configuration = builder.Configuration;
 
 // Add services to the container.
 builder.Services.AddControllers();
-builder.Services.AddScoped<IUnsubscriptionService, UnsubscriptionService>();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
-
 builder.Services.AddSwaggerGen(c =>
 {
     c.SwaggerDoc("v1", new OpenApiInfo { Title = "My API", Version = "v1" });
@@ -65,11 +61,13 @@ builder.Services.AddCors(options =>
 });
 
 
+builder.Services.Configure<NotificationOptions>(builder.Configuration.GetSection("Notification"));
 builder.Services.AddScoped<IUnsubscriptionService, UnsubscriptionService>();
 builder.Services.AddScoped<ISubscriptionService, SubscriptionService>();
 builder.Services.AddScoped<INotificationService, NotificationService>();
-builder.Services.AddScoped<ToDoListHttpClient>();
-builder.Services.AddScoped<HttpClient>();
+builder.Services.AddSingleton<SubtaskHttpClient>();
+builder.Services.AddSingleton<ToDoListHttpClient>();
+builder.Services.AddSingleton<HttpClient>();
 
 
 builder.Services.AddDbContext<MyDBContext>(options =>
