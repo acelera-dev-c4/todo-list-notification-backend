@@ -9,6 +9,7 @@ using Services;
 using Infra;
 using Microsoft.OpenApi.Models;
 using Microsoft.Extensions.Configuration;
+using Infra.HttpClients;
 
 
 
@@ -68,6 +69,7 @@ builder.Services.AddCors(options =>
 builder.Services.AddScoped<IUnsubscriptionService, UnsubscriptionService>();
 builder.Services.AddScoped<ISubscriptionService, SubscriptionService>();
 builder.Services.AddScoped<INotificationService, NotificationService>();
+builder.Services.AddScoped<INotificationHttpClient, NotificationHttpClient>();
 builder.Services.AddScoped<ToDoListHttpClient>();
 builder.Services.AddScoped<HttpClient>();
 

@@ -1,8 +1,11 @@
 ﻿using Azure;
+using Domain;
 using Microsoft.Extensions.Configuration;
+using Newtonsoft.Json;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
+using JsonSerializer = Newtonsoft.Json.JsonSerializer;
 
 namespace Infra;
 
@@ -13,8 +16,8 @@ public class ToDoListHttpClient
 
     public ToDoListHttpClient(HttpClient httpClient, IConfiguration configuration)
     {
-        _httpClient = httpClient;        
-        _httpClient.BaseAddress = new Uri("https://localhost:7057/");
+        _httpClient = httpClient;
+        _httpClient.BaseAddress = new Uri("https://localhost:7142/");
         _configuration = configuration;
     }
     // exemplo, nao esta funcionando ainda
@@ -32,11 +35,11 @@ public class ToDoListHttpClient
             password = _configuration["SystemUser:Password"]
         };
 
-        string jsonLogin = JsonSerializer.Serialize(login);
+        string jsonLogin = JsonConvert.SerializeObject(login);
         HttpContent loginContent = new StringContent(jsonLogin, Encoding.UTF8, "application/json");
         HttpResponseMessage response = await _httpClient.PostAsync($"{_httpClient.BaseAddress}Auth", loginContent);
-        
-        response.EnsureSuccessStatusCode();    
+
+        response.EnsureSuccessStatusCode();
 
         string responseBody = await response.Content.ReadAsStringAsync();
 
@@ -46,20 +49,37 @@ public class ToDoListHttpClient
         {
             JsonElement root = doc.RootElement;
             JsonElement tokenElement = root.GetProperty("token");
-            tokenFromAuth = tokenElement.GetProperty("token").GetString()!;            
+            tokenFromAuth = tokenElement.GetProperty("token").GetString()!;
         }
 
         var payload = new
         {
-            url = $"{_httpClient.BaseAddress}Notification",            
-            mainTaskId = _mainTaskId,            
+            url = $"{_httpClient.BaseAddress}Notification",
+            mainTaskId = _mainTaskId,
         };
 
         _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", tokenFromAuth);
 
-        string jsonPayload = JsonSerializer.Serialize(payload);
+        string jsonPayload = JsonConvert.SerializeObject(payload);
         HttpContent content = new StringContent(jsonPayload, Encoding.UTF8, "application/json");
         var result = await _httpClient.PutAsync($"{_httpClient.BaseAddress}MainTask/SetUrlWebhook", content);
         return result;
     }
+
+   
+    public async Task<string> GetJWTAsync()
+    {
+        var authPath = "https://localhost:7142/Auth";
+        var requestBody = new { Email = "igor@mail.com", Password ="123456" };
+        var content = new StringContent(JsonConvert.SerializeObject(requestBody), Encoding.UTF8, "application/json");
+
+        var response = await _httpClient.PostAsync(authPath, content);
+        response.EnsureSuccessStatusCode();
+
+        var responseContent = await response.Content.ReadAsStringAsync();
+        ResponseModel responseModel = JsonConvert.DeserializeObject<ResponseModel>(responseContent) ?? throw new Exception("Invalid response");
+
+        return responseModel.Token.Token;
+    }
+
 }
