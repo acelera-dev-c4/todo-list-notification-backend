@@ -24,7 +24,7 @@ public class SubscriptionController : Controller
     [HttpPost]
     public async Task<IActionResult> Create([FromBody] SubscriptionsRequest subscriptionsRequest)
     {
-        var newSubscription = await _subscriptionService.Create(subscriptionsRequest);        
+        var newSubscription = await _subscriptionService.Create(subscriptionsRequest);
         return Ok(newSubscription);
     }
 
@@ -33,5 +33,19 @@ public class SubscriptionController : Controller
     {
         await _unsubscriptionService.Delete(subscriptionId);
         return NoContent();
+    }
+
+    [AllowAnonymous]
+    [HttpGet]
+    public async Task<IActionResult> GetSubscription([FromQuery] int? subtaskId)
+    {
+        if (subtaskId == null)
+            return BadRequest("O paramentro subtaskid é obrigatório");
+
+        var result = await _subscriptionService.GetSubscriptionAsync((int)subtaskId);
+        if (result == null)
+            return NotFound();
+        else
+            return Ok(result);        
     }
 }
