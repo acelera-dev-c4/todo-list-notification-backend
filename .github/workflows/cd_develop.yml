@@ -28,10 +28,10 @@ jobs:
         files: "${{ env.MSDEPLOY_PATH }}, ${{ env.MAIN_PROJ_PATH }}, ${{ env.SLN_PATH }}, ${{ env.PARAMFILE_PATH }}"
         allow_failure: true
 
-    - name: Setup .NET 6
+    - name: Setup .NET 8
       uses: actions/setup-dotnet@v1
       with:
-        dotnet-version: 6.0.x
+        dotnet-version: 8.0.x
 
     - name: dotnet restore
       run: dotnet restore ${{ env.SLN_PATH }}
