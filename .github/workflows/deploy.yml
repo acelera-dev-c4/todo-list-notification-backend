@@ -24,7 +24,7 @@ jobs:
         run: dotnet build ./src/todo-list-notification-backend.sln --no-restore
 
       - name: Publish
-        run: dotnet publish ./src/Api/ --no-restore
+        run: dotnet publish ./src/Api/ --no-restore -o ./publish
 
       - name: Deploy to Notification SmarterAsp        
         uses: talunzhang/auto-web-deploy@v1.0.1
