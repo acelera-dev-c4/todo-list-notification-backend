@@ -1,6 +1,6 @@
 namespace Domain.Options;
 
-public class NotificationOptions
+public class ToDoListOptions
 {
     public string? BaseUrl { get; set; }
     public int Port { get; set; }
