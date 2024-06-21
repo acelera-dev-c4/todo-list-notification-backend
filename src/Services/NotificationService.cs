@@ -37,24 +37,27 @@ public class NotificationService : INotificationService
     public async Task<List<Notifications>> GetByUserId(int userId)
     {
 		var jwt = await _notificationHttpClient.GetJWTAsync();
-		await _notificationHttpClient.GetMainTaskByUserId(userId);
+		var mainTasks = await _notificationHttpClient.GetMainTaskByUserId(userId);
+        var mainTaskIds = mainTasks.Select(mt => mt.Id).ToList();
+        var subscribedMainTaskIds = await _myDBContext.Subscriptions
+                                                      .Where(s => mainTaskIds.Contains(s.MainTaskIdTopic))
+                                                      .Select(s => s.MainTaskIdTopic)
+                                                      .ToListAsync();
 
+        var notifications = await _myDBContext.Notifications
+                                               .Where(n => subscribedMainTaskIds.Contains(n.SubscriptionId))
+                                               .OrderByDescending(n => n.Id)
+                                               .ToListAsync();
 
-
-
-
-        return await _myDBContext.Notifications.Where(n => n.SubscriptionId== userId).OrderByDescending(nameof => nameof.Id).ToListAsync();//Corrigir
-    }
+		return notifications;
+       
+       
+	}
 
 	public int GetUserId(int userId)
 	{
 
 		var Id = userId;
 		return Id;
-
-
-	}
-
-	
-	
+	}	
 }

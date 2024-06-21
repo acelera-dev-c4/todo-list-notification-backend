@@ -30,14 +30,21 @@ public class NotificationController : Controller
 	}
 
 	[HttpGet("User/{userId}")]
-	public async Task<IActionResult> GetByUserId([FromRoute]int userId)
+	public async Task<IActionResult> GetByUserId([FromRoute] int userId)
 	{
-		var notifications = await _notificationService.GetByUserId(userId);
-		if (notifications.Count == 0)
-		{
-			return NotFound("No notifications found for this user.");
-		}
-		return Ok(notifications);
+		//try
+		//{
+			var notifications = await _notificationService.GetByUserId(userId);
+			/*if (notifications.Count == 0 || notifications == null)
+			{
+				return NotFound("No notifications found for this user.");
+			}*/
+			return Ok(notifications);
+		//}
+		//catch (Exception ex)
+		//{
+			//return StatusCode(500, "Internal error");
+		//}
 	}
    /* [HttpPost("webhook")]
     public async Task<IActionResult> HandleWebhook([FromBody] WebhookRequest request)

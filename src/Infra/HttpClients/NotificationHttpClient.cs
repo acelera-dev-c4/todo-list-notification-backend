@@ -46,7 +46,7 @@ public class NotificationHttpClient : INotificationHttpClient
 
     public async Task<List<MainTask>> GetMainTaskByUserId(int userId)
     {
-        var jwt = await GetJWTAsync(); // Supondo que você tenha um método para obter o JWT
+        var jwt = await GetJWTAsync();
         _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", jwt);
 
         var mainTaskPath = $"https://localhost:7142/MainTask/{userId}";
@@ -55,8 +55,23 @@ public class NotificationHttpClient : INotificationHttpClient
 
         var responseContent = await response.Content.ReadAsStringAsync();
         List<MainTask> mainTasks = JsonConvert.DeserializeObject<List<MainTask>>(responseContent) ?? new List<MainTask>();
-
         return mainTasks;
+    }
+    public async Task<List<int>> GetSubscribedMainTaskIds(List<int> mainTaskIds)
+    {
+        var jwt = await GetJWTAsync();
+        _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", jwt);
+        
+        var subscriptionPath = "https://localhost:7142/Subscriptions/";
+        var content = new StringContent(JsonConvert.SerializeObject(mainTaskIds), Encoding.UTF8, "application/json");
+        var response = await _httpClient.PostAsync(subscriptionPath, content);
+        response.EnsureSuccessStatusCode();
+
+        var responseContent = await response.Content.ReadAsStringAsync();
+        List<int> subscribedMainTaskIds = JsonConvert.DeserializeObject<List<int>>(responseContent) ?? new List<int>();
+
+        return subscribedMainTaskIds;
+
     }
 }
 
@@ -93,33 +108,33 @@ public class NotificationHttpClient : INotificationHttpClient
 
 
 
-    //var mainTaskPath = $"https://localhost:7142/MainTask{subscription.MainTaskIdTopic}";
-    //response = await _httpClient.GetAsync(mainTaskPath);
-    // response.EnsureSuccessStatusCode();
+//var mainTaskPath = $"https://localhost:7142/MainTask{subscription.MainTaskIdTopic}";
+//response = await _httpClient.GetAsync(mainTaskPath);
+// response.EnsureSuccessStatusCode();
 
-    // responseContent = await response.Content.ReadAsStringAsync();
-    //var mainTask = JsonConvert.DeserializeObject<MainTask>(responseContent) ?? throw new Exception("MainTask not found");
+// responseContent = await response.Content.ReadAsStringAsync();
+//var mainTask = JsonConvert.DeserializeObject<MainTask>(responseContent) ?? throw new Exception("MainTask not found");
 
 
-    /*public async Task<int?> GetUserIdBySubscriptionIdAsync(int subscriptionsId)
-    {
-        var jwt = await GetJWTAsync();
-        _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", jwt);
-        var subscriptionPath = $"https://localhost:7056/Subscription?subscriptionId/{subscriptionsId}";
-        var response = await _httpClient.GetAsync(subscriptionPath);
-        response.EnsureSuccessStatusCode();
+/*public async Task<int?> GetUserIdBySubscriptionIdAsync(int subscriptionsId)
+{
+    var jwt = await GetJWTAsync();
+    _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", jwt);
+    var subscriptionPath = $"https://localhost:7056/Subscription?subscriptionId/{subscriptionsId}";
+    var response = await _httpClient.GetAsync(subscriptionPath);
+    response.EnsureSuccessStatusCode();
 
-        var responseContent = await response.Content.ReadAsStringAsync();
-        var subscription = JsonConvert.DeserializeObject<Subscriptions>(responseContent) ?? throw new Exception("subscription not found");
+    var responseContent = await response.Content.ReadAsStringAsync();
+    var subscription = JsonConvert.DeserializeObject<Subscriptions>(responseContent) ?? throw new Exception("subscription not found");
 
-        var mainTaskPath = $"https://localhost:7142/MainTask{subscription.MainTaskIdTopic}";
-        response = await _httpClient.GetAsync(mainTaskPath);
-        response.EnsureSuccessStatusCode();
+    var mainTaskPath = $"https://localhost:7142/MainTask{subscription.MainTaskIdTopic}";
+    response = await _httpClient.GetAsync(mainTaskPath);
+    response.EnsureSuccessStatusCode();
 
-        responseContent = await response.Content.ReadAsStringAsync();
-        var mainTask = JsonConvert.DeserializeObject<MainTask>(responseContent) ?? throw new Exception("MainTask not found");
-        return mainTask.UserId;
-    }*/
+    responseContent = await response.Content.ReadAsStringAsync();
+    var mainTask = JsonConvert.DeserializeObject<MainTask>(responseContent) ?? throw new Exception("MainTask not found");
+    return mainTask.UserId;
+}*/
 
 
 
