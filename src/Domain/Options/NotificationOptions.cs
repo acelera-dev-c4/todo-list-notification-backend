@@ -2,7 +2,7 @@ namespace Domain.Options;
 
 public class NotificationOptions
 {
-    public string? Uri { get; set; }
+    public string? BaseUrl { get; set; }
     public int Port { get; set; }
     public string? Auth { get; set; }
     public string? Subtask { get; set; }
