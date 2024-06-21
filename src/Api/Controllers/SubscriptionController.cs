@@ -35,7 +35,7 @@ public class SubscriptionController : Controller
         return NoContent();
     }
 
-    [HttpGet("bySubTaskId")]
+    [HttpGet("SubTaskId")]
     public async Task<IActionResult> GetSubscriptionBySubtaskId([FromQuery] int? subtaskId)
     {
         if (subtaskId == null)
@@ -48,7 +48,7 @@ public class SubscriptionController : Controller
             return Ok(result);
     }
 
-    [HttpGet("byMainTaskId")]
+    [HttpGet("MainTaskId")]
     public async Task<IActionResult> GetSubscriptionByMainTaskId([FromQuery] int? maintaskId)
     {
         if (maintaskId == null)

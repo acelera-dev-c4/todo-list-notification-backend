@@ -37,8 +37,8 @@ public class ToDoListHttpClient
     {
         var login = new
         {
-            email = _configuration["SystemUser:Email"],
-            password = _configuration["SystemUser:Password"]
+            email = _configuration["ToDoListApi:Email"],
+            password = _configuration["ToDoListApi:Password"]
         };
 
         string jsonLogin = JsonSerializer.Serialize(login);
