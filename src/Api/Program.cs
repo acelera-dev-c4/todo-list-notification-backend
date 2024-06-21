@@ -19,7 +19,7 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
 {
-    c.SwaggerDoc("v1", new OpenApiInfo { Title = "Notification API", Version = "v1" });
+    c.SwaggerDoc("v1", new OpenApiInfo { Title = "My API", Version = "v1" });
     c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {
         Description = "JWT Authorization header using the Bearer scheme. Example: \"Authorization: Bearer { Token}\"",
@@ -60,13 +60,18 @@ builder.Services.AddCors(options =>
 });
 
 
-builder.Services.Configure<NotificationOptions>(builder.Configuration.GetSection("NotificationApi"));
+builder.Services.Configure<ToDoListOptions>(builder.Configuration.GetSection("ToDoListApi"));
 builder.Services.AddScoped<IUnsubscriptionService, UnsubscriptionService>();
 builder.Services.AddScoped<ISubscriptionService, SubscriptionService>();
 builder.Services.AddScoped<INotificationService, NotificationService>();
-builder.Services.AddSingleton<SubtaskHttpClient>();
-builder.Services.AddSingleton<ToDoListHttpClient>();
-builder.Services.AddSingleton<HttpClient>();
+builder.Services.AddScoped<SubtaskHttpClient>();
+builder.Services.AddScoped<ToDoListHttpClient>();
+builder.Services.AddHttpClient("toDoClient", client =>
+{
+    var toDoListUri = builder.Configuration.GetValue<string>("ToDoListApi:BaseUrl");
+    client.BaseAddress = new Uri(toDoListUri);
+    client.Timeout = TimeSpan.FromSeconds(60);
+});
 
 
 builder.Services.AddDbContext<MyDBContext>(options =>

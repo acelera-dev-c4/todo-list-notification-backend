@@ -35,17 +35,29 @@ public class SubscriptionController : Controller
         return NoContent();
     }
 
-    [AllowAnonymous]
-    [HttpGet]
-    public async Task<IActionResult> GetSubscription([FromQuery] int? subtaskId)
+    [HttpGet("bySubTaskId")]
+    public async Task<IActionResult> GetSubscriptionBySubtaskId([FromQuery] int? subtaskId)
     {
         if (subtaskId == null)
             return BadRequest("O paramentro subtaskid é obrigatório");
 
-        var result = await _subscriptionService.GetSubscriptionAsync((int)subtaskId);
+        var result = await _subscriptionService.GetSubscriptionBySubTaskId((int)subtaskId);
         if (result == null)
             return NotFound();
         else
-            return Ok(result);        
+            return Ok(result);
+    }
+
+    [HttpGet("byMainTaskId")]
+    public async Task<IActionResult> GetSubscriptionByMainTaskId([FromQuery] int? maintaskId)
+    {
+        if (maintaskId == null)
+            return BadRequest("O paramentro maintaskId é obrigatório");
+
+        var result = await _subscriptionService.GetSubscriptionByMainTaskId((int)maintaskId);
+        if (result == null)
+            return NotFound();
+        else
+            return Ok(result);
     }
 }
