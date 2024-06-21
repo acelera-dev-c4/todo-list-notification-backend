@@ -1,0 +1,38 @@
+name: Build, publish and deploy project to Simply
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+s
+jobs:
+  build_and_deploy:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup .NET Core
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0
+          
+      - name: Install dependencies
+        run: dotnet restore
+        
+      - name: Build
+        run: dotnet build --configuration Release --no-restore
+
+      - name: Publish
+        run: dotnet publish
+        
+      - name: Test with .NET
+        run: dotnet test
+
+      - name: Deploy to Simply        
+        uses: talunzhang/auto-web-deploy@v1.0.1
+        with:
+          website-name: ${{ secrets.WEBSITE_NAME }}
+          server-computer-name: ${{ secrets.SERVER_COMPUTER_NAME }}
+          server-username: ${{ secrets.SERVER_USERNAME }}
+          server-password: ${{ secrets.SERVER_PASSWORD }}
