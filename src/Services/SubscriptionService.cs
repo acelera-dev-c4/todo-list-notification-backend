@@ -1,7 +1,7 @@
 using Domain.Models;
 using Domain.Requests;
-using Infra.DB;
 using Infra;
+using Infra.DB;
 using Microsoft.EntityFrameworkCore;
 
 namespace Services;
@@ -9,8 +9,8 @@ namespace Services;
 public interface ISubscriptionService
 {
     Task<Subscriptions> Create(SubscriptionsRequest subscription);
-    Task<Subscriptions?> GetSubscriptionAsync(int subtaskId);
-
+    Task<Subscriptions?> GetSubscriptionBySubTaskId(int subtaskId);
+    Task<List<Subscriptions?>> GetSubscriptionByMainTaskId(int maintaskId);
 }
 
 public class SubscriptionService : ISubscriptionService
@@ -31,20 +31,21 @@ public class SubscriptionService : ISubscriptionService
             SubTaskIdSubscriber = subscription.SubTaskIdSubscriber,
             MainTaskIdTopic = subscription.MainTaskIdTopic
         };
-        
+
         await _todoListHttpClient.SetUrlWebhook(subscription.MainTaskIdTopic);
-        
+
         _myDBContext.Subscriptions.Add(newSubscription);
         await _myDBContext.SaveChangesAsync();
 
         return newSubscription;
     }
-    public async Task<Subscriptions?>GetSubscriptionAsync(int subtaskId)    
+    public async Task<Subscriptions?> GetSubscriptionBySubTaskId(int subtaskId)
     {
         return await _myDBContext.Subscriptions.Where(s => s.SubTaskIdSubscriber == subtaskId).FirstOrDefaultAsync();
-          
     }
 
-
+    public async Task<List<Subscriptions>?> GetSubscriptionByMainTaskId(int maintaskId)
+    {
+        return await _myDBContext.Subscriptions.Where(s => s.MainTaskIdTopic == maintaskId).ToListAsync();
+    }
 }
- 

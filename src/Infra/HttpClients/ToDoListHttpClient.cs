@@ -10,12 +10,10 @@ public class ToDoListHttpClient
     private readonly HttpClient _httpClient;
     private readonly IConfiguration _configuration;
 
-    public ToDoListHttpClient(HttpClient httpClient, IConfiguration configuration)
+    public ToDoListHttpClient(IHttpClientFactory httpClientFactory, IConfiguration configuration)
     {
-        _httpClient = httpClient;
         _configuration = configuration;
-        _httpClient.BaseAddress = new Uri(_configuration["NotificationApi:BaseUrl"]!);
-
+        _httpClient = httpClientFactory.CreateClient("toDoClient");
     }
 
     public async Task<HttpResponseMessage> SetUrlWebhook(int _mainTaskId)
@@ -39,8 +37,8 @@ public class ToDoListHttpClient
     {
         var login = new
         {
-            email = _configuration["SystemUser:Email"],
-            password = _configuration["SystemUser:Password"]
+            email = _configuration["ToDoListApi:Email"],
+            password = _configuration["ToDoListApi:Password"]
         };
 
         string jsonLogin = JsonSerializer.Serialize(login);
@@ -61,5 +59,4 @@ public class ToDoListHttpClient
 
         return token;
     }
-
 }
