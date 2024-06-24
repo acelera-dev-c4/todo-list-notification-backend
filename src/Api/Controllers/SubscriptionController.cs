@@ -60,4 +60,14 @@ public class SubscriptionController : Controller
         else
             return Ok(result);
     }
+
+    [HttpGet]
+    public async Task<IActionResult> GetSubscription()
+    {   
+        var result = await _subscriptionService.GetSubscriptions();
+        if (result == null)
+            return NotFound();
+        else
+            return Ok(result);
+    }
 }

@@ -11,6 +11,7 @@ public interface ISubscriptionService
     Task<Subscriptions> Create(SubscriptionsRequest subscription);
     Task<Subscriptions?> GetSubscriptionBySubTaskId(int subtaskId);
     Task<List<Subscriptions?>> GetSubscriptionByMainTaskId(int maintaskId);
+    Task<List<Subscriptions>?> GetSubscriptions();
 }
 
 public class SubscriptionService : ISubscriptionService
@@ -47,5 +48,10 @@ public class SubscriptionService : ISubscriptionService
     public async Task<List<Subscriptions>?> GetSubscriptionByMainTaskId(int maintaskId)
     {
         return await _myDBContext.Subscriptions.Where(s => s.MainTaskIdTopic == maintaskId).ToListAsync();
+    }
+
+    public async Task<List<Subscriptions>?> GetSubscriptions()
+    {
+        return await _myDBContext.Subscriptions.ToListAsync();
     }
 }
