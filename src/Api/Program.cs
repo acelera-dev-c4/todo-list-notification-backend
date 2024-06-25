@@ -47,6 +47,8 @@ builder.Services.AddSwaggerGen(c =>
     });
 });
 
+builder.Services.AddHttpContextAccessor();
+
 // CORS
 builder.Services.AddCors(options =>
 {
