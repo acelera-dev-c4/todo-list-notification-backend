@@ -11,6 +11,24 @@ Este projeto é um modelo de aprendizagem do Projeto Acelera Dev, do Grupo Carre
 
 Este projeto tem como objetivo fornecer uma API RESTful para gerenciamento de tarefa, permitindo aos usuários assinar e dessasinar em tarefas e receber uma notificação assim que a tarefa assinada seja concluída. É uma aplicação desenvolvida com.NET Core, utilizando o Entity Framework Core para persistência de dados.
 
+## Pontos fortes
+
+| Descrição                                            | Responsável |
+|------------------------------------------------------|-------------|
+| Automação na esteira. build + testes                 | Igor       |
+| Microserviço                                         | Igor     |
+| Domínio bem definido                                 | Diogenes     |
+| Usamos princípios do SOLID                           | Diogenes     |
+| Desacoplamento de código                             | Leandro Pio     |
+| Boas práticas de async/await                         | Leandro Pio     |
+| Web hook para integrar Apis                          | Patric     |
+| Não temos dados sensíveis no repo                    | Patric     |
+| Autenticação JWT                                     | Anderson     |
+| Api rest seguindo os verbos e status corretamente    | Anderson    |
+| Testes unitários                                     | Vagner      |
+| Code review forte                                    | Vagner    |
+
+
 ## Ferramentas Recomendadas
 
 ### Desenvolvimento
