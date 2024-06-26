@@ -40,8 +40,5 @@ public class NotificationController : Controller
 		var notifications = await _notificationService.GetByUserId(UserId);
 		return Ok(notifications);
 	}
-
-
-
 }
 
