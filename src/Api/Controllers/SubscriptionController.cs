@@ -62,7 +62,7 @@ public class SubscriptionController : Controller
     }
 
     [HttpGet]
-    public async Task<IActionResult> GetSubscription()
+    public async Task<IActionResult> GetSubscriptions()
     {   
         var result = await _subscriptionService.GetSubscriptions();
         if (result == null)
