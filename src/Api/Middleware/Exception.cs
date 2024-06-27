@@ -50,6 +50,11 @@ public class ExceptionHandler
             code = HttpStatusCode.Forbidden;
         }
 
+        if (ex is OperationCanceledException)
+        {
+            code = HttpStatusCode.
+        }
+
         if (ex is NotFoundException) code = HttpStatusCode.NotFound;
 
         var resultado = JsonSerializer.Serialize(new { error = ex.Message });

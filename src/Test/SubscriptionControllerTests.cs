@@ -6,8 +6,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using Services;
-using System.Text;
-using System.Text.Json.Nodes;
 
 namespace Test
 {
@@ -23,15 +21,16 @@ namespace Test
             _subServMock = new Mock<ISubscriptionService>();
             _controller = new SubscriptionController(_unSubServMock.Object, _subServMock.Object);
         }
-
+        // Create method (null / empty body and null values are being handled by the middleware on the call for the route, and can only be tested by integration tests)
         [Theory]
-        [InlineData(5, 20, 5, 20)]
-        [InlineData(int.MaxValue, int.MaxValue, int.MaxValue, int.MaxValue)]
-        [InlineData(50, 1, 50, 1)]
+        [InlineData(5, 20, 5, 20, 1)]
+        [InlineData(int.MaxValue, int.MaxValue, int.MaxValue, int.MaxValue, 2)]
+        [InlineData(50, 1, 50, 1, 3)]
         public async Task Create_ReturnsOk_WhenRequestIsCorrect(int requestMainTaskIdTopic,
                                                                 int requestSubTaskIdSubscriber,
                                                                 int expectedMainTaskId,
-                                                                int expectedSubTaskId)
+                                                                int expectedSubTaskId,
+                                                                int expectedSubscriptionId)
         {
             // Arrange
             SubscriptionsRequest subscriptionsRequest = new()
@@ -41,7 +40,7 @@ namespace Test
             };
             Subscriptions expectedSubscription = new()
             {
-                Id = 0,
+                Id = expectedSubscriptionId,
                 MainTaskIdTopic = expectedMainTaskId,
                 SubTaskIdSubscriber = expectedSubTaskId
             };
@@ -49,7 +48,6 @@ namespace Test
 
             // Act
             var result = await _controller.Create(subscriptionsRequest) as OkObjectResult;
-
 
             // Assert
             result.Should().NotBeNull();
@@ -62,19 +60,26 @@ namespace Test
             returnedSub!.SubTaskIdSubscriber.Should().Be(subscriptionsRequest.SubTaskIdSubscriber);
             returnedSub!.Id.Should().NotBeNull().And.BeGreaterThan(0);
         }
-#pragma warning disable CS8604
+
         [Fact]
-        public async Task Create_ReturnsBadRequest_WhenReceivingInvalidRequest()
+        public async Task Create_ReturnsInternalServerError_OnServiceException()
         {
             // Arrange
+            var subscriptionsRequest = new SubscriptionsRequest
+            {
+                MainTaskIdTopic = 5,
+                SubTaskIdSubscriber = 1
+            };
+            _subServMock.Setup(service => service.Create(subscriptionsRequest))
+                        .ThrowsAsync(new OperationCanceledException("Database error"));
 
             // Act
-            var result = await _controller.Create(null) as BadRequestResult;
+            var result = await _controller.Create(subscriptionsRequest) as ObjectResult;
 
             // Assert
             result.Should().NotBeNull();
-            result!.StatusCode.Should().Be(StatusCodes.Status400BadRequest);
+            result!.StatusCode.Should().Be(StatusCodes.Status500InternalServerError);
+            result.Value.Should().Be("Database error");
         }
-#pragma warning restore CS8604
     }
 }
