@@ -35,7 +35,7 @@ public class SubscriptionService : ISubscriptionService
 
         await _todoListHttpClient.SetUrlWebhook(subscription.MainTaskIdTopic);
 
-        _myDBContext.Subscriptions.Add(newSubscription);
+        await _myDBContext.Subscriptions.AddAsync(newSubscription);
         await _myDBContext.SaveChangesAsync();
 
         return newSubscription;
