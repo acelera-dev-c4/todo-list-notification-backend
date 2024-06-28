@@ -21,7 +21,8 @@ namespace Test
             _subServMock = new Mock<ISubscriptionService>();
             _controller = new SubscriptionController(_unSubServMock.Object, _subServMock.Object);
         }
-        // Create method (null / empty body and null values are being handled by the middleware on the call for the route, and can only be tested by integration tests)
+        // Create method (null / empty body and null values are being handled by the middleware on the call for the route,
+        // and can only be tested by integration tests)
         [Theory]
         [InlineData(5, 20, 5, 20, 1)]
         [InlineData(int.MaxValue, int.MaxValue, int.MaxValue, int.MaxValue, 2)]
@@ -61,25 +62,32 @@ namespace Test
             returnedSub!.Id.Should().NotBeNull().And.BeGreaterThan(0);
         }
 
-        [Fact]
-        public async Task Create_ReturnsInternalServerError_OnServiceException()
+        [Theory]
+        [MemberData(nameof(ExceptionTestData))]
+        public async Task Create_ReturnsInternalServerError_OnServiceException(Exception ex)
         {
             // Arrange
             var subscriptionsRequest = new SubscriptionsRequest
             {
-                MainTaskIdTopic = 5,
-                SubTaskIdSubscriber = 1
+                MainTaskIdTopic = 999,
+                SubTaskIdSubscriber = 9999
             };
+
             _subServMock.Setup(service => service.Create(subscriptionsRequest))
-                        .ThrowsAsync(new OperationCanceledException("Database error"));
+                        .ThrowsAsync(ex);
 
-            // Act
-            var result = await _controller.Create(subscriptionsRequest) as ObjectResult;
+            // Act & Assert
+            var exception = await Assert.ThrowsAsync(ex.GetType(), () => _controller.Create(subscriptionsRequest));
 
-            // Assert
-            result.Should().NotBeNull();
-            result!.StatusCode.Should().Be(StatusCodes.Status500InternalServerError);
-            result.Value.Should().Be("Database error");
+            exception.Should().NotBeNull();
+            exception.Should().BeOfType(ex.GetType());
         }
+
+        public static IEnumerable<object[]> ExceptionTestData =>
+        new List<object[]>
+        {
+            new object[] { new System.OperationCanceledException() },
+            new object[] { new InvalidOperationException() }
+        };
     }
 }

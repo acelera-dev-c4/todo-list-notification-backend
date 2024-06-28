@@ -52,7 +52,7 @@ public class ExceptionHandler
 
         if (ex is OperationCanceledException)
         {
-            code = HttpStatusCode.
+            code = HttpStatusCode.InternalServerError;
         }
 
         if (ex is NotFoundException) code = HttpStatusCode.NotFound;
