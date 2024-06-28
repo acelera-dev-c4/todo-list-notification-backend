@@ -81,6 +81,7 @@ bash git clone https://github.com/acelera-dev-c4/todo-list-notification-backend.
 - [Leandro Pio](https://github.com/LeandroMPio)
 - [Patric Costa](https://github.com/Patric-BM)
 - [Vagner Silva](https://github.com/Vagner1212)
+- [Anderson Gomes](https://github.com/AndersonRFC)
 
 ## Relacionados
 
