@@ -11,6 +11,7 @@ public interface ISubscriptionService
     Task<Subscriptions> Create(SubscriptionsRequest subscription);
     Task<Subscriptions?> GetSubscriptionBySubTaskId(int subtaskId);
     Task<List<Subscriptions?>> GetSubscriptionByMainTaskId(int maintaskId);
+    Task<(List<int> MainTaskIds, int TotalCount)> GetSubscribedMainTasksIds(int pageNumber, int pageSize);
 }
 
 public class SubscriptionService : ISubscriptionService
@@ -34,7 +35,7 @@ public class SubscriptionService : ISubscriptionService
 
         await _todoListHttpClient.SetUrlWebhook(subscription.MainTaskIdTopic);
 
-        _myDBContext.Subscriptions.Add(newSubscription);
+        await _myDBContext.Subscriptions.AddAsync(newSubscription);
         await _myDBContext.SaveChangesAsync();
 
         return newSubscription;
@@ -47,5 +48,19 @@ public class SubscriptionService : ISubscriptionService
     public async Task<List<Subscriptions>?> GetSubscriptionByMainTaskId(int maintaskId)
     {
         return await _myDBContext.Subscriptions.Where(s => s.MainTaskIdTopic == maintaskId).ToListAsync();
+    }
+
+    public async Task<(List<int> MainTaskIds, int TotalCount)> GetSubscribedMainTasksIds(int pageNumber, int pageSize)
+    {
+        var mainTaskIds = await _myDBContext.Subscriptions
+                                           .OrderBy(s => s.Id)
+                                           .Skip((pageNumber - 1) * pageSize)
+                                           .Take(pageSize)
+                                           .Select(s => s.MainTaskIdTopic)
+                                           .ToListAsync();
+
+        var totalCount = await _myDBContext.Subscriptions.CountAsync();
+
+        return (mainTaskIds, totalCount);
     }
 }
