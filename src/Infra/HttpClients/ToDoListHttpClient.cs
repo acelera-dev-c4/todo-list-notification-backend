@@ -22,7 +22,7 @@ public class ToDoListHttpClient
 
         var payload = new
         {
-            url = $"{_httpClient.BaseAddress}Notification",
+            url = $"{_configuration["NotificationApi:BaseUrl"]}Notification",
             mainTaskId = _mainTaskId,
         };
 
