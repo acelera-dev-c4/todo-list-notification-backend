@@ -123,7 +123,7 @@ app.UseHttpsRedirection();
 
 app.UseCors("AllowAllHeaders");
 
-app.UseMiddleware(typeof(ExceptionHandler));
+app.UseMiddleware<ExceptionHandler>();
 
 app.UseAuthorization();
 
