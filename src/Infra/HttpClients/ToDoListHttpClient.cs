@@ -5,7 +5,12 @@ using System.Text.Json;
 
 namespace Infra;
 
-public class ToDoListHttpClient
+public interface IToDoListHttpClient
+{
+    Task<HttpResponseMessage> SetUrlWebhook(int _mainTaskId);
+}
+
+public class ToDoListHttpClient : IToDoListHttpClient
 {
     private readonly HttpClient _httpClient;
     private readonly IConfiguration _configuration;

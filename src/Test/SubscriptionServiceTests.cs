@@ -6,6 +6,7 @@ using Infra.DB;
 using Microsoft.EntityFrameworkCore;
 using Moq;
 using Services;
+using System.Net;
 
 namespace Test
 {
@@ -13,12 +14,21 @@ namespace Test
     {
         private readonly SubscriptionService _subService;
         private readonly Mock<MyDBContext> _dbContextMock;
-        private readonly Mock<ToDoListHttpClient> _clientMock;
+        private readonly Mock<IToDoListHttpClient> _clientMock;
+        private readonly Mock<IHttpClientFactory> _httpClientFactoryMock;
         public SubscriptionServiceTests()
         {
-            _dbContextMock = new Mock<MyDBContext>(new DbContextOptions<MyDBContext>());
-            _clientMock = new Mock<ToDoListHttpClient>();
+            var options = new DbContextOptionsBuilder<MyDBContext>()
+                          .UseInMemoryDatabase(databaseName: "test_db")
+                          .Options;
+
+            _dbContextMock = new Mock<MyDBContext>(options);
+            _httpClientFactoryMock = new Mock<IHttpClientFactory>();
+            _clientMock = new Mock<IToDoListHttpClient>(MockBehavior.Strict);
             _subService = new(_dbContextMock.Object, _clientMock.Object);
+
+            _httpClientFactoryMock.Setup(f => f.CreateClient("toDoClient"))
+                                  .Returns(new HttpClient());
         }
 
         [Fact]
@@ -38,8 +48,9 @@ namespace Test
                 SubTaskIdSubscriber = subRequest.SubTaskIdSubscriber
             };
 
-            _dbContextMock.Setup(db => db.Subscriptions.AddAsync(newSub, default));
+            _dbContextMock.Setup(db => db.Set<Subscriptions>().AddAsync(newSub, default));
             _dbContextMock.Setup(db => db.SaveChangesAsync(default)).ReturnsAsync(1);
+            _clientMock.Setup(c => c.SetUrlWebhook(subRequest.MainTaskIdTopic)).ReturnsAsync((new HttpResponseMessage(HttpStatusCode.OK)));
 
             // Act
             var result = await _subService.Create(subRequest);
@@ -51,6 +62,5 @@ namespace Test
             result.SubTaskIdSubscriber.Should().Be(subRequest.SubTaskIdSubscriber);
             result.MainTaskIdTopic.Should().Be(subRequest.MainTaskIdTopic);
         }
-
     }
 }
