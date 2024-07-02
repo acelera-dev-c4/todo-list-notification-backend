@@ -17,9 +17,9 @@ public interface ISubscriptionService
 public class SubscriptionService : ISubscriptionService
 {
     private readonly MyDBContext _myDBContext;
-    private readonly IToDoListHttpClient _todoListHttpClient;
+    private readonly ToDoListHttpClient _todoListHttpClient;
 
-    public SubscriptionService(MyDBContext context, IToDoListHttpClient toDoListHttpClient)
+    public SubscriptionService(MyDBContext context, ToDoListHttpClient toDoListHttpClient)
     {
         _myDBContext = context;
         _todoListHttpClient = toDoListHttpClient;

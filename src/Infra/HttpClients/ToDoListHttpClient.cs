@@ -5,12 +5,7 @@ using System.Text.Json;
 
 namespace Infra;
 
-public interface IToDoListHttpClient
-{
-    Task<HttpResponseMessage> SetUrlWebhook(int _mainTaskId);
-}
-
-public class ToDoListHttpClient : IToDoListHttpClient
+public class ToDoListHttpClient
 {
     private readonly HttpClient _httpClient;
     private readonly IConfiguration _configuration;
@@ -21,7 +16,7 @@ public class ToDoListHttpClient : IToDoListHttpClient
         _httpClient = httpClientFactory.CreateClient("toDoClient");
     }
 
-    public async Task<HttpResponseMessage> SetUrlWebhook(int _mainTaskId)
+    public virtual async Task<HttpResponseMessage> SetUrlWebhook(int _mainTaskId)
     {
         _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", await GetTokenSystemUserFromToDoList());
 
