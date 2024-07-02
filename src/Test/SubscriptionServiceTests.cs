@@ -4,9 +4,8 @@ using FluentAssertions;
 using Infra;
 using Infra.DB;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.ChangeTracking;
-using Microsoft.EntityFrameworkCore.ChangeTracking.Internal;
 using Microsoft.Extensions.Configuration;
+using MockQueryable.Moq;
 using Moq;
 using Services;
 using System.Net;
@@ -18,17 +17,12 @@ namespace Test
         private readonly SubscriptionService _subService;
         private readonly Mock<MyDBContext> _dbContextMock;
         private readonly Mock<ToDoListHttpClient> _clientMock;
-        private readonly Mock<DbSet<Subscriptions>> mockSubscriptionsDbSet;
+        private readonly Mock<DbSet<Subscriptions>> _mockSubscriptionsDbSet;
+        private readonly List<Subscriptions> _subscriptionsList;
 
         public SubscriptionServiceTests()
         {
-            var options = new DbContextOptionsBuilder<MyDBContext>()
-                              .UseInMemoryDatabase(databaseName: "Mock_DB")
-                              .Options;
-
-            _dbContextMock = new Mock<MyDBContext>(options);
-
-            var subscriptions = new List<Subscriptions>
+            _subscriptionsList = new()
             {
                 new Subscriptions { Id = 1, MainTaskIdTopic = 15, SubTaskIdSubscriber = 78 },
                 new Subscriptions { Id = 2, MainTaskIdTopic = 21, SubTaskIdSubscriber = 99 },
@@ -36,15 +30,16 @@ namespace Test
                 new Subscriptions { Id = 4, MainTaskIdTopic = 55, SubTaskIdSubscriber = 98 },
                 new Subscriptions { Id = 5, MainTaskIdTopic = 82, SubTaskIdSubscriber = 37 },
                 new Subscriptions { Id = 6, MainTaskIdTopic = 2, SubTaskIdSubscriber = 26 }
-            }.AsQueryable();
+            };
 
-            mockSubscriptionsDbSet = new();
-            mockSubscriptionsDbSet.As<IQueryable<Subscriptions>>().Setup(m => m.Provider).Returns(subscriptions.Provider);
-            mockSubscriptionsDbSet.As<IQueryable<Subscriptions>>().Setup(m => m.Expression).Returns(subscriptions.Expression);
-            mockSubscriptionsDbSet.As<IQueryable<Subscriptions>>().Setup(m => m.ElementType).Returns(subscriptions.ElementType);
-            mockSubscriptionsDbSet.As<IQueryable<Subscriptions>>().Setup(m => m.GetEnumerator()).Returns(subscriptions.GetEnumerator());
+            var options = new DbContextOptionsBuilder<MyDBContext>()
+                              .UseInMemoryDatabase(databaseName: "Mock_DB")
+                              .Options;
 
-            _dbContextMock.Setup(db => db.Subscriptions).Returns(mockSubscriptionsDbSet.Object);
+            _dbContextMock = new Mock<MyDBContext>(options);
+
+            _mockSubscriptionsDbSet = _subscriptionsList.AsQueryable().BuildMockDbSet();
+            _dbContextMock.Setup(db => db.Subscriptions).Returns(_mockSubscriptionsDbSet.Object);
 
             var _httpClientFactoryMock = new Mock<IHttpClientFactory>();
             _httpClientFactoryMock.Setup(f => f.CreateClient("toDoClient"))
@@ -68,32 +63,34 @@ namespace Test
             _subService = new(_dbContextMock.Object, _clientMock.Object);
         }
 
-        [Fact]
-        public async void Create_ReturnsNewSubscription_WhenRequestIsGood()
+        [InlineData(21, 25)]
+        [InlineData(1, int.MaxValue)]
+        [InlineData(int.MaxValue, 1)]
+        [InlineData(9999, 7777)]
+        [Theory]
+        public async Task Create_ReturnsNewSubscription_WhenRequestIsGood(int mainTaskId, int subTaskId)
         {
             // Arrange
             SubscriptionsRequest subRequest = new()
             {
-                MainTaskIdTopic = 95,
-                SubTaskIdSubscriber = 115
+                MainTaskIdTopic = mainTaskId,
+                SubTaskIdSubscriber = subTaskId
             };
 
-            Subscriptions expectedNewSub = new()
-            {
-                MainTaskIdTopic = subRequest.MainTaskIdTopic,
-                SubTaskIdSubscriber = subRequest.SubTaskIdSubscriber
-            };
+            _mockSubscriptionsDbSet.Setup(m => m.AddAsync(It.IsAny<Subscriptions>(), It.IsAny<CancellationToken>()))
+                                   .Callback<Subscriptions, CancellationToken>((sub, ct) =>
+                                   {
+                                       sub.Id = _subscriptionsList.Count() + 1;
+                                       _subscriptionsList.Add(sub);
+                                   })
+                                   .ReturnsAsync((Subscriptions sub, CancellationToken ct) =>
+                                   {
+                                       var entry = _dbContextMock.Object.Entry(sub);
+                                       return entry;
+                                   });
 
-            var entry = new EntityEntry<Subscriptions>(new InternalEntityEntry(stateManager: default, entityType: typeof(Subscriptions), entity: expectedNewSub));
-
-            _dbContextMock.Setup(db => db.SaveChangesAsync(default)).ReturnsAsync(1);
-            _dbContextMock.Setup(db => db.Subscriptions.AddAsync(It.IsAny<Subscriptions>(), It.IsAny<CancellationToken>()))
-                .Returns(entry);
-
-
-
-
-
+            _dbContextMock.Setup(db => db.SaveChangesAsync(It.IsAny<CancellationToken>()))
+                          .ReturnsAsync(1);
 
             // Act
             var result = await _subService.Create(subRequest);
@@ -101,9 +98,54 @@ namespace Test
             // Assert
             result.Should().NotBeNull();
             result.Should().BeOfType<Subscriptions>();
-            result.Id.Should().BeGreaterThan(0);
-            result.SubTaskIdSubscriber.Should().Be(expectedNewSub.SubTaskIdSubscriber);
-            result.MainTaskIdTopic.Should().Be(expectedNewSub.MainTaskIdTopic);
+            result.Id.Should().Be(_subscriptionsList.Count());
+            result.SubTaskIdSubscriber.Should().Be(subRequest.SubTaskIdSubscriber);
+            result.MainTaskIdTopic.Should().Be(subRequest.MainTaskIdTopic);
+            _mockSubscriptionsDbSet.Verify(m => m.AddAsync(It.IsAny<Subscriptions>(), It.IsAny<CancellationToken>()), Times.Once);
+            _dbContextMock.Verify(db => db.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
+        }
+
+        [InlineData(15)]
+        [InlineData(21)]
+        [InlineData(7)]
+        [InlineData(55)]
+        [InlineData(82)]
+        [InlineData(2)]
+        [Theory]
+        public async Task GetSubscriptionByMainTaskId_ReturnsSubscriptions_WhenValidId(int mainTaskId)
+        {
+            // Arrange            
+            var expectedSubscriptions = _subscriptionsList.Where(s => s.MainTaskIdTopic == mainTaskId).ToList();
+
+            // Act
+            var result = await _subService.GetSubscriptionByMainTaskId(mainTaskId);
+
+            // Assert
+            result.Should().NotBeNull();
+            result.Should().Contain(s => s.MainTaskIdTopic == mainTaskId);
+            result.Should().BeOfType<List<Subscriptions>>();
+            result.Should().BeEquivalentTo(expectedSubscriptions);
+        }
+
+        [InlineData(78)]
+        [InlineData(99)]
+        [InlineData(4)]
+        [InlineData(98)]
+        [InlineData(37)]
+        [InlineData(26)]
+        [Theory]
+        public async Task GetSubscriptionBySubTaskId_ReturnsSubscription_WhenValidId(int subTaskId)
+        {
+            // Arrange            
+            var expectedSubscriptions = _subscriptionsList.Where(s => s.SubTaskIdSubscriber == subTaskId).FirstOrDefault();
+
+            // Act
+            var result = await _subService.GetSubscriptionBySubTaskId(subTaskId);
+
+            // Assert
+            result.Should().NotBeNull();
+            result.Should().BeOfType<Subscriptions>();
+            result.Should().BeEquivalentTo(expectedSubscriptions);
         }
     }
 }
