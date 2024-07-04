@@ -60,18 +60,4 @@ public class SubscriptionController : Controller
         else
             return Ok(result);
     }
-
-    [HttpGet]
-    public async Task<IActionResult> GetSubscribedMainTasksIds([FromQuery] int pageNumber, int pageSize)
-    {
-        var (mainTaskIds, totalCount) = await _subscriptionService.GetSubscribedMainTasksIds(pageNumber, pageSize);
-        if (mainTaskIds == null || mainTaskIds.Count == 0)
-            return NotFound();
-        else
-            return Ok(new
-            {
-                MainTaskIds = mainTaskIds,
-                TotalCount = totalCount
-            });
-    }
 }
