@@ -41,7 +41,11 @@ public class NotificationController : Controller
         return Ok(notifications);
     }
 
-
-
+	[HttpPut("{notificationId}")]
+	public async Task<IActionResult> Put(int notificationId, [FromBody] NotificationUpdate updateNotification)
+	{
+		var notification = await _notificationService.Update(updateNotification, notificationId);
+		return Ok(notification);
+	}
 }
 

@@ -16,13 +16,13 @@ public class ToDoListHttpClient
         _httpClient = httpClientFactory.CreateClient("toDoClient");
     }
 
-    public async Task<HttpResponseMessage> SetUrlWebhook(int _mainTaskId)
+    public virtual async Task<HttpResponseMessage> SetUrlWebhook(int _mainTaskId)
     {
         _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", await GetTokenSystemUserFromToDoList());
 
         var payload = new
         {
-            url = $"{_httpClient.BaseAddress}Notification",
+            url = $"{_configuration["NotificationApi:BaseUrl"]}Notification",
             mainTaskId = _mainTaskId,
         };
 

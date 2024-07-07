@@ -7,3 +7,8 @@ public class NotificationRequest
 	public bool Readed { get; set; } = false;
 	public int UserId {  get; set; }
 }
+
+public class NotificationUpdate
+{
+	public bool Readed { get; set; } = false;
+}
