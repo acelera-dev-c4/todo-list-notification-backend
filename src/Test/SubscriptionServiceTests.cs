@@ -147,5 +147,32 @@ namespace Test
             result.Should().BeOfType<Subscriptions>();
             result.Should().BeEquivalentTo(expectedSubscriptions);
         }
+
+        [Fact]
+        public async Task GetSubscriptionBySubTaskId_ReturnsNull_WhenNonExistentId()
+        {
+            // Arrange
+            var invalidId = 98765;
+
+            // Act
+            var result = await _subService.GetSubscriptionBySubTaskId(invalidId);
+            
+            // Assert
+            result.Should().BeNull();
+        }
+
+        [Fact]
+        public async Task GetSubscriptionByMainTaskId_ReturnsNull_WhenNonExistentId()
+        {
+            // Arrange
+            var invalidId = 43210;
+
+            // Act
+            var result = await _subService.GetSubscriptionByMainTaskId(invalidId);
+
+            // Assert
+            result.Should().BeEmpty();
+            result.Should().BeOfType<List<Subscriptions>>();
+        }
     }
 }
