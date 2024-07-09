@@ -1,4 +1,5 @@
-﻿using Domain.Requests;
+﻿using Domain.Models;
+using Domain.Requests;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
@@ -43,7 +44,7 @@ public class SubscriptionController : Controller
 
         var result = await _subscriptionService.GetSubscriptionBySubTaskId((int)subtaskId);
         if (result == null)
-            return NotFound();
+            return Ok(new List<Subscriptions>());
         else
             return Ok(result);
     }
