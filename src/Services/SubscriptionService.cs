@@ -33,6 +33,12 @@ public class SubscriptionService : ISubscriptionService
             MainTaskIdTopic = subscription.MainTaskIdTopic
         };
 
+        Subscriptions? existingSub = await _myDBContext.Subscriptions
+         .FirstOrDefaultAsync(sub => sub.MainTaskIdTopic == subscription.MainTaskIdTopic && sub.SubTaskIdSubscriber == newSubscription.SubTaskIdSubscriber);
+
+        if (existingSub != null)
+            throw new InvalidOperationException("A subscription with the same MainTaskIdTopic and SubTaskIdSubscriber already exists.");
+
         await _todoListHttpClient.SetUrlWebhook(subscription.MainTaskIdTopic);
         await _myDBContext.Subscriptions.AddAsync(newSubscription);
         await _myDBContext.SaveChangesAsync();

@@ -50,12 +50,19 @@ public class ExceptionHandler
             code = HttpStatusCode.Forbidden;
         }
 
+        if (ex is InvalidOperationException)
+        {
+            code = HttpStatusCode.BadRequest;
+        }
+
         if (ex is NotFoundException) code = HttpStatusCode.NotFound;
 
         var resultado = JsonSerializer.Serialize(new { error = ex.Message });
         httpContext.Response.ContentType = "application/json";
         httpContext.Response.StatusCode = (int)code;
         return httpContext.Response.WriteAsync(resultado);
+
+        
     }
 
 }
