@@ -1,5 +1,6 @@
 ﻿using Domain.Exceptions;
 using Domain.Models;
+using Infra;
 using Infra.DB;
 using Microsoft.EntityFrameworkCore;
 
@@ -14,10 +15,12 @@ public interface IUnsubscriptionService
 public class UnsubscriptionService : IUnsubscriptionService
 {
     private readonly MyDBContext _myDBContext;
+    private readonly ToDoListHttpClient _client;
 
-    public UnsubscriptionService(MyDBContext myDBContext)
+    public UnsubscriptionService(MyDBContext myDBContext, ToDoListHttpClient toDoListHttpClient)
     {
         _myDBContext = myDBContext;
+        _client = toDoListHttpClient;
     }
 
     public async Task<Subscriptions?> GetById(int subscriptionId)
@@ -31,6 +34,7 @@ public class UnsubscriptionService : IUnsubscriptionService
 
         if (subscription is null) throw new NotFoundException("Subscription not found");
 
+        await _client.DeleteUrlWebhook(subscription.MainTaskIdTopic);
         await _myDBContext.Subscriptions.Where(x => x.Id == subscriptionId).ExecuteDeleteAsync();
     }
 }

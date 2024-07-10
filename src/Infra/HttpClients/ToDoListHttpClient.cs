@@ -28,7 +28,24 @@ public class ToDoListHttpClient
 
         string jsonPayload = JsonSerializer.Serialize(payload);
         HttpContent content = new StringContent(jsonPayload, Encoding.UTF8, "application/json");
-        var result = await _httpClient.PutAsync($"{_httpClient.BaseAddress}MainTask/SetUrlWebhook", content); //401
+        var result = await _httpClient.PutAsync($"{_httpClient.BaseAddress}MainTask/SetUrlWebhook", content); 
+
+        return result;
+    }
+
+    public virtual async Task<HttpResponseMessage> DeleteUrlWebhook(int _mainTaskId)
+    {
+        _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", await GetTokenSystemUserFromToDoList());
+
+        var payload = new
+        {
+            url = "",
+            mainTaskId = _mainTaskId,
+        };
+
+        string jsonPayload = JsonSerializer.Serialize(payload);
+        HttpContent content = new StringContent(jsonPayload, Encoding.UTF8, "application/json");
+        var result = await _httpClient.PutAsync($"{_httpClient.BaseAddress}MainTask/SetUrlWebhook", content);
 
         return result;
     }
